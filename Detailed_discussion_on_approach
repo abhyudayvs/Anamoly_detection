@@ -1,0 +1,41 @@
+This code demonstrates how to use anomaly detection techniques (specifically Isolation Forest) to identify jobs that deviate significantly from their typical performance (i.e., time taken to upload to the cloud) based on historical trends. Below is an explanation of the key steps and the approach.
+1. Simulated Data Generation:
+The script first creates simulated data for 20 jobs (job_1, job_2, ..., job_20) over the last 30 days.
+Each job has three attributes:
+job_id: Unique identifier for the job.
+date: Date when the job was run.
+time_taken: Time (in seconds) the job took to upload to the cloud (randomly generated between 100 and 500).
+2. Calculate a 2-Week Rolling Mean:
+The data is grouped by job_id and sorted by date.
+For each job, a 2-week (14-day) rolling mean of the time_taken is computed:
+The rolling mean represents the average time taken for each job over the past 14 days.
+A new column, rolling_mean_2w, is added to the dataset to store this rolling mean.
+3. Calculate Deviation from the Rolling Mean:
+The difference between the actual time_taken and the rolling_mean_2w is calculated for each job on each day:
+time_diff = time_taken - rolling_mean_2w
+This quantifies how much the job's performance deviates from its recent average behavior.
+4. Feature Standardization:
+The time_diff is standardized using StandardScaler to normalize the data:
+Standardization ensures that the anomaly detection algorithm operates effectively, as the features are scaled to have a mean of 0 and a standard deviation of 1.
+A new column, scaled_time_diff, contains the scaled version of time_diff.
+5. Apply Isolation Forest for Anomaly Detection:
+Isolation Forest is used to detect anomalies:
+It is an unsupervised learning algorithm that isolates anomalies based on the assumption that they are few and different from the majority of the data.
+The parameter contamination=0.1 indicates that 10% of the data is expected to be anomalies.
+A new column, anomaly, is added:
+1: Normal observation.
+-1: Anomalous observation.
+6. Identify Anomalies:
+The rows where anomaly == -1 (flagged as anomalies) are filtered into a new DataFrame called anomalies.
+This DataFrame displays the following:
+job_id: The job flagged as anomalous.
+date: The date on which the anomaly occurred.
+time_taken: The time it took for the job on that day.
+rolling_mean_2w: The 2-week rolling mean for that job.
+
+time_diff: The deviation from the rolling mean.
+
+Output
+The output shows the jobs and dates where the time_taken deviated significantly from the expected 2-week average. This helps in identifying cases where:
+Jobs took unusually longer to complete.
+Potential performance issues occurred.
